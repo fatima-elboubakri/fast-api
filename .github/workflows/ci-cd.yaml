@@ -1,0 +1,34 @@
+name: FastAPI CI-CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -p ${{ secrets.SSH_PORT }} \
+            ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy FastAPI to WSL
+        run: |
+          ssh -p ${{ secrets.SSH_PORT }} \
+          ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            if [ ! -d "my-app" ]; then
+              git clone https://github.com/<USERNAME>/my-app.git
+            fi
+            cd my-app
+            git pull origin main
+            docker compose down
+            docker compose up -d --build
+          EOF
