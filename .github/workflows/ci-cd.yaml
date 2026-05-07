@@ -25,10 +25,10 @@ jobs:
         run: |
           ssh -p ${{ secrets.SSH_PORT }} \
           ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            if [ ! -d "my-app" ]; then
-              git clone https://github.com/<USERNAME>/my-app.git
+            if [ ! -d "fast-api" ]; then
+              git clone https://github.com/fatima-elboubakri/fast-api.git
             fi
-            cd my-app
+            cd fast-api
             git pull origin main
             docker compose down
             docker compose up -d --build
