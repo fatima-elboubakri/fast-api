@@ -1,0 +1,4 @@
+{
+    "start": "uvicorn main:app --reload",
+    "test": "pytest -v --cov=app --cov-report=html"
+}
